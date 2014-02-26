@@ -1,12 +1,6 @@
 WORKSPACE=STBlockingQueue.xcworkspace
 SCHEME=STBlockingQueue
 
-clean:
-	xctool -workspace ${WORKSPACE} -scheme ${SCHEME} clean
-
-build:
-	xctool -workspace ${WORKSPACE} -scheme ${SCHEME} build -sdk iphonesimulator
-
 test:
-	xctool -workspace ${WORKSPACE} -scheme ${SCHEME} run-tests -test-sdk iphonesimulator -parallelize
+	xcodebuild test -workspace ${WORKSPACE} -scheme ${SCHEME} -destination 'name=iPhone Retina (3.5-inch),OS=7.0'
 
