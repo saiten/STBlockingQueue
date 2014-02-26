@@ -55,14 +55,14 @@ int32_t const STBlockingQueueDefaultCapacity = 4096;
 }
 
 
-- (void)cancel
+- (void)close
 {
-    if(_cancelled) {
+    if(_closed) {
         return;
     }
     
     pthread_mutex_lock(&_mutex);
-    _cancelled = YES;
+    _closed = YES;
     pthread_cond_signal(&_condition);
     pthread_mutex_unlock(&_mutex);
 }
@@ -96,7 +96,7 @@ int32_t const STBlockingQueueDefaultCapacity = 4096;
 - (int32_t)pushWithBytes:(const int8_t *)buffer size:(int32_t)size discontinuity:(BOOL)discontinuity
 {
     int writtenSize = 0;
-    while(writtenSize < size && !_cancelled) {
+    while(writtenSize < size && !_closed) {
         int32_t writableSize = MIN(size, _capacity);
         int32_t ret = [self _pushWithBytes:(buffer + writtenSize)
                                       size:writableSize
@@ -110,7 +110,7 @@ int32_t const STBlockingQueueDefaultCapacity = 4096;
 - (int32_t)popWithBytes:(int8_t *)buffer size:(int32_t)size discontinuity:(BOOL *)discontinuity
 {
     int readSize = 0;
-    while(readSize < size && !_cancelled) {
+    while(readSize < size && !_closed) {
         int32_t readableSize = MIN(size, _capacity);
         int32_t ret = [self _popWithBytes:(buffer + readSize)
                                      size:readableSize
@@ -129,7 +129,7 @@ int32_t const STBlockingQueueDefaultCapacity = 4096;
 {
     NSAssert(size <= _capacity, @"buffer overflow");
     
-    if(_cancelled) {
+    if(_closed) {
         return 0;
     }
     
@@ -146,7 +146,7 @@ int32_t const STBlockingQueueDefaultCapacity = 4096;
             first = NO;
         }
         head = TPCircularBufferHead(&_circularBuffer, &availableSize);
-    } while(size > availableSize && !_cancelled);
+    } while(size > availableSize && !_closed);
     
     int32_t writableSize = MIN(size, availableSize);
     memcpy(head, buffer, writableSize);
@@ -185,7 +185,7 @@ int32_t const STBlockingQueueDefaultCapacity = 4096;
             first = NO;
         }
         tail = TPCircularBufferTail(&_circularBuffer, &availableSize);
-    } while(size > availableSize && !_cancelled && !_discontinuity);
+    } while(size > availableSize && !_closed && !_discontinuity);
     
     int32_t readableSize = MIN(size, availableSize);
     memcpy(buffer, tail, readableSize);

@@ -10,7 +10,7 @@
 extern int32_t const STBlockingQueueDefaultCapacity;
 
 @interface STBlockingQueue : NSObject
-@property (nonatomic, readonly) BOOL    cancelled;
+@property (nonatomic, readonly) BOOL    closed;
 @property (nonatomic, readonly) BOOL    discontinuity;
 @property (nonatomic, readonly) int32_t capacity;
 @property (nonatomic, readonly) int32_t readableSize;
@@ -26,6 +26,6 @@ extern int32_t const STBlockingQueueDefaultCapacity;
 - (int32_t)popWithBytes:(int8_t*)buffer size:(int32_t)size;
 - (int32_t)popWithBytes:(int8_t*)buffer size:(int32_t)size discontinuity:(BOOL*)discontinuity;
 
-- (void)cancel;
+- (void)close;
 
 @end

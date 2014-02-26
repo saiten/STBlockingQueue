@@ -214,7 +214,7 @@
     });
 }
 
-- (void)testCancelAsync
+- (void)testCloseAsync
 {
     // cancel when wait for reading
     {
@@ -225,7 +225,7 @@
             
             int writtenSize = [blockingQueue pushWithBytes:data.bytes size:data.length];
 
-            XCTAssertFalse(blockingQueue.cancelled, @"");
+            XCTAssertFalse(blockingQueue.closed, @"");
             XCTAssertEqual(8, writtenSize, @"should write 8 bytes");
         });
 
@@ -233,14 +233,14 @@
             int8_t buf[16];
             int readSize = [blockingQueue popWithBytes:buf size:16];
 
-            XCTAssert(blockingQueue.cancelled, @"");
+            XCTAssert(blockingQueue.closed, @"");
             XCTAssertEqual(8, readSize, @"should read 8 bytes");
         });
     
         double delayInSeconds = 1.0;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            [blockingQueue cancel];
+            [blockingQueue close];
         });
     }
     // cancel when wait for writing
@@ -254,7 +254,7 @@
             
             int writtenSize = [blockingQueue pushWithBytes:dataBuf size:bufferSize];
             
-            XCTAssert(blockingQueue.cancelled, @"");
+            XCTAssert(blockingQueue.closed, @"");
             XCTAssertEqual(blockingQueue.capacity + 8, writtenSize, @"written capacity bytes");
             
             XCAsyncSuccess();
@@ -263,15 +263,15 @@
             int8_t buf[8];
             
             int readSize = [blockingQueue popWithBytes:buf size:8];
-            XCTAssertFalse(blockingQueue.cancelled, @"");
+            XCTAssertFalse(blockingQueue.closed, @"");
             XCTAssertEqual(8, readSize, @"should read capacity bytes");
         });
         
         double delayInSeconds = 2.0;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            [blockingQueue cancel];
-            XCTAssert(blockingQueue.cancelled, @"");
+            [blockingQueue close];
+            XCTAssert(blockingQueue.closed, @"");
         });
     }
 }
