@@ -160,6 +160,8 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         int8_t buf[bufferSize];
         
+        sleep(1);
+        
         int readSize = [blockingQueue popWithBytes:buf size:bufferSize];
         XCTAssertEqual(bufferSize, readSize, @"");
         XCTAssertEqual(0, blockingQueue.readableSize, @"");
