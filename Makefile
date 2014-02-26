@@ -8,5 +8,5 @@ build:
 	xctool -workspace ${WORKSPACE} -scheme ${SCHEME} build -sdk iphonesimulator
 
 test:
-	xctool -workspace ${WORKSPACE} -scheme ${SCHEME} test -test-sdk iphonesimulator -parallelize
+	xctool -workspace ${WORKSPACE} -scheme ${SCHEME} run-tests -test-sdk iphonesimulator -parallelize
 
